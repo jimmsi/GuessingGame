@@ -1,0 +1,57 @@
+1. När använder man add respektive commit?
+
+git add används för att "stagea" ändringar som ska inkluderas i nästa commit. Ändringar sparas då i det som kallas staging area - ett slags förberedande steg. 
+git commit används för att faktiskt spara ändringar i ett Git-repository. Commiten innehåller alla ändringar som lagts till i staging area, får ett unikt ID, samt ett meddelande som beskriver vad som ändrats. 
+
+2. Vad är pull repektive push?
+
+git pull används för att hämta ändringar från ett fjärrrepository och slå ihop dem med den gren man befinner sig på lokalt.
+git push används tvärtom för att skicka ändringar från lokalt gjorda commits till ett fjärrrepository, t.ex. så team-medlemmar kan komma åt dem online. 
+
+3. När använder man log respektive status?
+
+git log används för att visa en historik över vilka commit som gjorts i ett git-repository. Info som visas är hash (ID), användare, datum och commit-meddelande. 
+git status används för att visa information om arbetskatalogens status kopplat till senaste commit. Visar vilka filer som ändrats, vilka som är markerade för commit, med mera. 
+
+4. Vad är en Git branch och varför är de viktiga?
+
+En Git branch är en "gren", en sorts kopia av den projektrepository man arbetar med. Genom att arbeta på en gren som är separat från huvudgrenen (ofta kallad main eller master) kan man arbeta självständigt på ett program, separat från andra utvecklare. När man är färdig med sin del kan man sedan slå ihop grenen med huvudgrenen (merge) för att integrera den nyutvecklade delen med huvudprogrammet som helhet. Flera utvecklare kan alltså arbeta parallellt med olika vidareutvecklingar av ett program, för att sedan integrera dessa till huvudprogrammet. 
+Olika metoder för att rulla tillbaka koden till ett tidigare tillstånd
+
+1. git checkout. Byter till en tidigare commit, det innebär att pekaren HEAD flyttas till den tidigare commiten, men det innebär även att innehållet i staging area och i arbetskatalogen ändras till den tidigare commiten. Denna metod behåller historiken och skapar inte heller någon ny commit. 
+2. git revert. Byter inte, utan skapar en helt ny commit som ångrar de ändringar som infördes av en tidigare commit. Så man stegar "tillbaka" ett steg, men gör det genom att skapa en ny commit som är identisk med en tidigare. Denna metod behåller historiken och tar inte bort något. 
+3. git reset. Återställer pekaren HEAD till en specifik commit. Finns i tre versioner, soft, mixed och hard. 
+
+Om jag t ex vill backa tillbaka till en tidigare commit i mitt fjärrepository GuessingGame, kan jag först kolla vilken commit jag vill gå tillbaka till med hjälp av git log. 
+Säg nu att jag vill gå tillbaka till commit 486922569658b05b1590f92f6acee1f7e99bcc5f. Jag bestämmer mig för att jag vill använda git revert. Men först vill jag byta branch, så jag går tillbaka i en annan branch och behåller min main intakt. 
+
+Här är mina kommandon: 
+
+Jimmys-MacBook-Pro:guessingGame jimmyemanuelsson$ git checkout -b rollback-branch
+Växlade till en ny gren "rollback-branch"
+Jimmys-MacBook-Pro:guessingGame jimmyemanuelsson$ git revert 486922569658b05b1590f92f6acee1f7e99bcc5f
+[rollback-branch a97823e] Revert "Adds a getReply-method"
+2 files changed, 2 insertions(+), 10 deletions(-)
+
+Ok, nu vill jag också pusha denna rollback upp till mitt fjärrrepository. 
+
+Jimmys-MacBook-Pro:guessingGame jimmyemanuelsson$ git push origin rollback-branch
+Räknar upp objekt: 7, klart.
+Räknar objekt: 100% (7/7), klart.
+Deltakomprimering använder upp till 4 trådar
+Komprimerar objekt: 100% (4/4), klart.
+Skriver objekt: 100% (4/4), 538 bytes | 538,00 KiB/s, klart.
+Totalt 4 (delta 2), återanvände 0 (delta 0), paket-återanvända 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+remote: 
+remote: Create a pull request for 'rollback-branch' on GitHub by visiting:
+remote:      https://github.com/jimmsi/GuessingGame/pull/new/rollback-branch
+remote: 
+To https://github.com/jimmsi/GuessingGame.git
+ * [new branch]      rollback-branch -> rollback-branch
+
+Nu har jag skapat en rollback-branch där projektet finns i en tidigare version kan jag om jag vill gå tillbaka till main och få tillgång till projektet så som det var innan jag rullade tillbaka. 
+
+Jimmys-MacBook-Pro:guessingGame jimmyemanuelsson$ git checkout main
+Växlade till grenen "main"
+Din gren är à jour med "origin/main".
